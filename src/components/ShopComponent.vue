@@ -2,16 +2,27 @@
     <div class="shop-title">
         <h2>Isfin Shop</h2>
     </div>
-    <div class="list-container">
-        <ul class="product-list">
-            <li
-                v-for="product in products"
-                :key="product.id"
-                class="product-item"
-            >
-                {{ product.param2 }}
-            </li>
-        </ul>
+    <div class="main-container">
+        <div class="list-container">
+            <ul class="product-list">
+                <li
+                    v-for="product in products"
+                    :key="product.id"
+                    class="product-item"
+                >
+                    <img
+                        class="product-img"
+                        :src="getIconPath(product.param5)" 
+                        :alt="product.param1"
+                    />
+
+                    <div class="product-info">
+                        <p class="product-name">{{ product.param1 }}</p>
+                        <p class="product-price">{{ product.param2 }} gold</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -28,6 +39,9 @@ export default {
         async getProducts() {
             this.products = await apiClient.getAllProducts();
         },
+        getIconPath(param5) {
+            return new URL(`../assets/icons/${param5}.png`, import.meta.url).href;
+        }
     },
     created() {
         this.getProducts();
@@ -36,11 +50,18 @@ export default {
 </script>
 
 <style scoped>
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 80vh;
+    margin: 0;
+}
+
 .list-container {
     margin-left: 20px;
-    position: relative;
-    display: flex;
-    align-items: start;
+    max-width: 525px;
 }
 
 .product-list {
@@ -56,15 +77,41 @@ export default {
 
 .product-item {
     width: 100px;
-    height: 100px;
+    height: 120px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.5);
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.2);
     color: black;
     font-weight: bold;
     border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+.product-img {
+    height: 35px;
+    margin-bottom: 5px;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-name {
+    font-size: 14px;
+    margin: 0;
+}
+
+.product-price {
+    font-size: 15px;
+    color: darkgoldenrod;
+    margin: 0;
+    text-shadow: 1px 1px 2px black
 }
 
 .shop-title {
@@ -74,6 +121,10 @@ export default {
     background-size: 200px;
     background-repeat: no-repeat;
     background-position: center;
-    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.shop-title h2 {
+    transform: rotate(-5deg);
 }
 </style>
+
