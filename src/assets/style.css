@@ -1,0 +1,21 @@
+body {
+    background-image: url("../assets/icons/Goblin_merchant.webp");
+    background-size: cover;
+    background-position: center;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #dd8715;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #a3680f;
+}
