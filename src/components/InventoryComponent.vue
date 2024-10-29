@@ -1,17 +1,25 @@
 <template>
     <nav class="inventory-nav">
-        <router-link :to="{ name:'shop'}"><button>Volver a la Tienda</button></router-link>
+        <router-link :to="{ name: 'shop' }"
+            ><button>Volver a la Tienda</button></router-link
+        >
     </nav>
     <div class="main-container">
-        <img src="../assets/icons/backpack.png" alt="mochila">
+        <img src="../assets/icons/backpack.png" alt="mochila" />
         <div class="inventory-container">
             <ul class="item-list">
                 <li v-for="item in items" :key="item.id" class="item">
                     <div class="item-info">
-                        <p class="item-name">{{ item.param1 }}: {{ item.param6 || 'Sin apodo' }}</p>
+                        <p class="item-name">
+                            {{ item.param1 }}: {{ item.param6 || "Sin apodo" }}
+                        </p>
                         <div class="item-btn">
-                            <button @click="openNicknameModal(item)">Asignar apodo</button>
-                            <button @click="discardItem(item)">Descartar</button>
+                            <button @click="openNicknameModal(item)">
+                                Asignar apodo
+                            </button>
+                            <button @click="discardItem(item)">
+                                Descartar
+                            </button>
                         </div>
                     </div>
                 </li>
@@ -38,7 +46,7 @@ export default {
             items: [],
             isNicknameModalVisible: false,
             selectedItem: null,
-            nickname: ""
+            nickname: "",
         };
     },
     methods: {
@@ -71,20 +79,15 @@ export default {
             } catch (error) {
                 console.error("Error al asignar apodo:", error);
             }
-        }
+        },
     },
     created() {
         this.getItems();
-    }
+    },
 };
 </script>
 
 <style scoped>
-:deep(body) {
-    background-image: url('../assets/icons/Background.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-}
 
 .inventory-nav {
     display: flex;
@@ -115,7 +118,7 @@ export default {
     background-size: cover;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 465px
+    max-width: 465px;
 }
 
 .item-list {
