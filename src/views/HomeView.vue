@@ -47,6 +47,7 @@ export default {
     padding: 20px;
     min-height: 100%;
     position: relative;
+    margin-top: 20px;
 }
 
 form {

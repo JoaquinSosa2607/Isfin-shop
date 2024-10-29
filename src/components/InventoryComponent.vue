@@ -8,14 +8,23 @@
             <ul class="item-list">
                 <li v-for="item in items" :key="item.id" class="item">
                     <div class="item-info">
-                        <p class="item-name">{{ item.param1 }}: {{ item.param6 }}</p>
+                        <p class="item-name">{{ item.param1 }}: {{ item.param6 || 'Sin apodo' }}</p>
                         <div class="item-btn">
-                            <button>Asignar apodo</button>
-                            <button>Descartar</button>
+                            <button @click="openNicknameModal(item)">Asignar apodo</button>
+                            <button @click="discardItem(item)">Descartar</button>
                         </div>
                     </div>
                 </li>
             </ul>
+        </div>
+    </div>
+
+    <div v-if="isNicknameModalVisible" class="modal">
+        <div class="modal-content">
+            <p>Ingresa el apodo:</p>
+            <input v-model="nickname" type="text" placeholder="Nuevo apodo" />
+            <button @click="assignNickname">Asignar</button>
+            <button @click="closeNicknameModal">Cancelar</button>
         </div>
     </div>
 </template>
@@ -27,24 +36,45 @@ export default {
     data() {
         return {
             items: [],
+            isNicknameModalVisible: false,
+            selectedItem: null,
+            nickname: ""
         };
     },
     methods: {
-        async getInventoryItems() {
-            try {
-                this.items = await apiClient.getAllInventoryItems();
-                console.log(this.items);
-            } catch (error) {
-                console.error("Error al obtener los elementos del inventario:", error);
-            }
+        async getItems() {
+            this.items = await apiClient.getAllInventoryItems();
+            console.log(this.items);
         },
-        getIconPath(param5) {
-        return new URL(`../assets/icons/${param5}.png`, import.meta.url).href;
+        async discardItem(item) {
+            await apiClient.deleteInventoryItem(item);
+            await this.getItems();
+        },
+        openNicknameModal(item) {
+            this.selectedItem = item;
+            this.nickname = "";
+            this.isNicknameModalVisible = true;
+        },
+        closeNicknameModal() {
+            this.isNicknameModalVisible = false;
+            this.selectedItem = null;
+            this.nickname = "";
+        },
+        async assignNickname() {
+            try {
+                if (this.selectedItem && this.nickname) {
+                    this.selectedItem.param6 = this.nickname;
+                    await apiClient.asignNickname(this.selectedItem);
+                    this.closeNicknameModal();
+                    await this.getItems();
+                }
+            } catch (error) {
+                console.error("Error al asignar apodo:", error);
+            }
         }
     },
-    
     created() {
-        this.getInventoryItems();
+        this.getItems();
     }
 };
 </script>
@@ -85,10 +115,8 @@ export default {
     background-size: cover;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 600px
+    max-width: 465px
 }
-
-
 
 .item-list {
     display: flex;
@@ -100,7 +128,7 @@ export default {
 }
 
 .item {
-    width: auto;
+    width: 120px;
     height: 120px;
     display: flex;
     flex-direction: column;
@@ -136,5 +164,36 @@ export default {
 .item-btn button {
     background-color: turquoise;
     color: black;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+}
+
+.modal-content input {
+    margin-bottom: 10px;
+    padding: 8px;
+    display: flex;
+    justify-self: center;
+    width: 250px;
+}
+
+.modal-content button {
+    margin: 5px;
 }
 </style>
