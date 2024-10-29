@@ -1,6 +1,15 @@
-# Vue 3 + Vite
+## Proyecto de Laboratorio-III
+## Isfin Shop 🐸
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Este proyecto es para regularizar la materia de laboratorio III, realizando un ABM consumiendo una API genérica.
+**La tienda de Isfin** permite al usuario visualizar una lista de productos a la venta, comprar el que desee ~~*si la cantidad de dinero que tiene es suficiente*~~ y poder acceder a su `inventario` para asignarle un apodo a su producto recién comprado o descartarlo para hacer espacio.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
-# Isfin-store
+---
+
+### Tecnologías usadas: 🛠️
+---
+ - [Vite](https://vite.dev/)
+ - [Vue](https://vuejs.org/)
+ - [Axios](https://axios-http.com/docs/intro)
+ - [Pinia](https://pinia.vuejs.org/)
+---
