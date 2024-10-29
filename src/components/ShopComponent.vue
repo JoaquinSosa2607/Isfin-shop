@@ -69,9 +69,14 @@ export default {
         },
         async purchaseProduct(product) {
             try {
-                await apiClient.purchaseProduct(product);
-                this.closeModal();
-                this.userStore.purchaseItem(product.param2)
+                if(this.userStore.money > 0) {
+                    await apiClient.purchaseProduct(product);
+                    this.closeModal();
+                    this.userStore.purchaseItem(product.param2)
+                } else {
+                    alert("No tiene el suficiente dinero")
+                }
+                
             } catch (error) {
                 console.error("Error al comprar el producto:", error);
             }

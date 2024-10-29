@@ -11,7 +11,11 @@ export const useUserStore = defineStore('user', {
             localStorage.setItem('userName', name);
         },
         purchaseItem(price) {
-            this.money = this.money - price;
+            if(this.money > 0) {
+                this.money = this.money - price;
+            } else {
+                return
+            }
         }
     }
 })
