@@ -72,7 +72,7 @@ export default {
             try {
                 if (this.selectedItem && this.nickname) {
                     this.selectedItem.param6 = this.nickname;
-                    await apiClient.asignNickname(this.selectedItem);
+                    await apiClient.setNickname(this.selectedItem);
                     this.closeNicknameModal();
                     await this.getItems();
                 }

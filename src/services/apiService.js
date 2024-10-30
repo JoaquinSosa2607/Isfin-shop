@@ -42,18 +42,11 @@ export default {
             console.error(error);
         }
     },
-    async asignNickname(item) {
+    async setNickname(item) {
         try {
-            const updatedItem = {
-                idcod: item.idcod,
-                param1: item.param1,
-                param2: item.param2,
-                param3: item.param3,
-                param4: item.param4,
-                param5: item.param5,
-                param6: item.param6
-            }
-            const response = await apiClient.patch('/inventario', updatedItem);
+            const updatedItem = {...item}
+            console.log(updatedItem)
+            await apiClient.patch('/inventario', updatedItem);
         } catch (error) {
             console.error("Error al asignar apodo:", error);
         }
