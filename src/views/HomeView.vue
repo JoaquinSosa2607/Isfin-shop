@@ -1,5 +1,5 @@
 <template>
-        <div class="home-container">
+    <div class="home-container">
         <form @submit.prevent="saveUserName">
             <label for="username">Ingresa tu nombre:</label>
             <input
