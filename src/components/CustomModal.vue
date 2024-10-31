@@ -1,10 +1,11 @@
 <template>
     <div v-if="isVisible" class="modal">
         <div class="modal-content">
-            <p> {{ message }}</p>
+            <p> {{ message }} {{ value }}</p>
+            <p v-if="result">Resultado de la tirada: {{ result }}</p>
             <input v-if="showInput" v-model="inputValue" type="text" placeholder="Ingrese el texto..."/>
             <div class="modal-actions">
-                <button @click="onConfirm"> {{ confirmText }}</button>
+                <button :disabled="disableConfirm" @click="onConfirm"> {{ confirmText }}</button>
                 <button @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
@@ -16,9 +17,12 @@
         props: {
             isVisible: { type: Boolean, default: false },
             message: { type: String, required: true },
+            value: { type: String },
             confirmText: { type: String, default: "Confirmar" },
             cancelText: { type: String, default: "Cancelar" },
-            showInput: { type: Boolean, default: false }
+            showInput: { type: Boolean, default: false },
+            result: { type: Number, default: null },
+            disableConfirm: { type: Boolean, default: false }
         },
         data() {
             return {

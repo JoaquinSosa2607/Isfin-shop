@@ -65,7 +65,6 @@ export default {
     methods: {
         async getItems() {
             this.items = await apiClient.getAllInventoryItems();
-            console.log(this.items);
         },
         openNicknameModal(item) {
             this.selectedItem = item;

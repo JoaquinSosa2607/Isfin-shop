@@ -4,27 +4,35 @@
     </nav>
     <div class="main-container">
         <div class="list-container">
-            <div class="money-display">Dinero: {{ userStore.money }}</div>
-            <ul class="product-list">
-                <li
-                    v-for="product in products"
-                    :key="product.id"
-                    class="product-item"
-                    @click="showModal(product)"
-                >
-                    <img
-                        class="product-img"
-                        :src="getIconPath(product.param5)" 
-                        :alt="product.param1"
-                    />
-                    <div class="product-info">
-                        <p class="product-name">{{ product.param1 }}</p>
-                        <p class="product-price">{{ product.param2 }} gold</p>
-                    </div>
-                </li>
-            </ul>
+            <div class="money-display">
+                Dinero: {{ userStore.money }}
+            </div>
+            <div class="product-container">
+                <ul class="product-list">
+                    <li v-for="product in products" :key="product.id" class="product-item" @click="showModal(product)">
+                        <img class="product-img" :src="getIconPath(product.param5)" :alt="product.param1"/>
+                        <div class="product-info">
+                            <p class="product-name">{{ product.param1 }}</p>
+                            <p class="product-price">{{ product.param2 }} gold</p>
+                        </div>
+                    </li>
+                </ul>
+                <img class="discount-attempt" src="../assets/icons/d20.png" alt="D20" @click="showDiscountModal">
+            </div>
         </div>
     </div>
+
+    <CustomModal
+        :isVisible="isDiscountModalVisible"
+        message="¿Quieres intentar obtener un descuento? Tendrás que superar:"
+        :value="difficulty"
+        :result="diceRoll"
+        :disableConfirm = "hasAttemptedDiscount"
+        confirmText="Persuadir"
+        cancelText="Cancelar"
+        @confirm="discountAttempt"
+        @cancel="closeModal"
+    />
 
     <CustomModal
         :isVisible="isModalVisible"
@@ -51,7 +59,11 @@ export default {
         return {
             products: [],
             isModalVisible: false,
+            isDiscountModalVisible: false,
             selectedProduct: null,
+            difficulty: null,
+            diceRoll: null,
+            hasAttemptedDiscount: false
         };
     },
     methods: {
@@ -65,14 +77,19 @@ export default {
             this.selectedProduct = product;
             this.isModalVisible = true;
         },
+        showDiscountModal() {
+            this.isDiscountModalVisible = true;
+        },
         closeModal() {
             this.isModalVisible = false;
-            this.selectedProduct = null; // Reinicia el producto seleccionado
+            this.isDiscountModalVisible = false;
+            this.selectedProduct = null;
         },
         async purchaseProduct(product) {
             try {
                 if(this.userStore.money > 0) {
                     await apiClient.purchaseProduct(product);
+                    await this.setDifficulty();
                     this.closeModal();
                     this.userStore.purchaseItem(product.param2)
                 } else {
@@ -82,10 +99,53 @@ export default {
             } catch (error) {
                 console.error("Error al comprar el producto:", error);
             }
-        }
+        },
+        async setDifficulty() {
+            const items = await apiClient.getAllInventoryItems();
+            if(items.length == 0) {
+                this.difficulty = "15"
+            } else if(items.length > 0 && items.length <= 5) {
+                this.difficulty = "12"
+            } else {
+                this.difficulty = "10"
+            }
+        },
+        async discountAttempt() {
+            this.diceRoll = Math.floor(Math.random() * 20) + 1;
+            
+            if (this.diceRoll >= this.difficulty) {
+                try {
+
+                    const updatedProducts = this.products.map(product => ({
+                        ...product,
+                        param2: product.param2 - 20
+                    }));
+
+                    const patchPromises = updatedProducts.map(async updatedProduct => {
+                        return await apiClient.updateProduct(updatedProduct);
+                    });
+
+                    await Promise.all(patchPromises);
+
+                    this.products = updatedProducts;
+                    alert("¡Descuento aplicado con éxito!");
+                    this.diceRoll = null;
+                    this.hasAttemptedDiscount = true
+
+                } catch (error) {
+                    console.error("Error al aplicar el descuento:", error);
+                }
+            } else {
+                alert(`Fallaste la tirada (Resultado: ${this.diceRoll}). No puedes volver a intentarlo.`);
+                this.diceRoll = null;
+                this.hasAttemptedDiscount = true;
+            }
+            this.closeModal();
+        },
     },
     created() {
         this.getProducts();
+        this.setDifficulty();
     },
     components: {
         CustomModal
@@ -112,7 +172,8 @@ export default {
 
 .list-container {
     margin-left: 20px;
-    max-width: 530px;
+    max-width: 605px;
+    flex-wrap: wrap;
 }
 
 .product-list {
@@ -140,6 +201,10 @@ export default {
     text-shadow: 1px 1px 2px black;
     padding: 10px;
     margin-bottom: 5px;
+}
+
+.product-container {
+    display: flex;
 }
 
 .product-item {
@@ -186,31 +251,10 @@ export default {
     text-shadow: 1px 1px 2px black;
 }
 
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+.discount-attempt{
+    width: 75px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: rgba(255, 255, 255, 0.726);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.modal-content p {
-    margin: 0 0 10px 0;
-}
-
-.modal-content button {
-    margin: 5px;
+    align-self: center;
+    justify-self: center;
 }
 </style>
