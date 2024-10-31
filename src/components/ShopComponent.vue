@@ -26,18 +26,20 @@
         </div>
     </div>
 
-    <div v-if="isModalVisible" class="modal">
-        <div class="modal-content">
-            <p>¿Comprar este objeto?</p>
-            <button @click="purchaseProduct(selectedProduct)">Comprar</button>
-            <button @click="closeModal">Cancelar</button>
-        </div>
-    </div>
+    <CustomModal
+        :isVisible="isModalVisible"
+        message="¿Comprar este objeto?"
+        confirmText="Comprar"
+        cancelText="Cancelar"
+        @confirm="purchaseProduct(selectedProduct)"
+        @cancel="closeModal"
+    />
 </template>
 
 <script>
 import apiClient from "../services/apiService";
 import { useUserStore } from "../stores/useUserStore";
+import CustomModal from "./CustomModal.vue";
 
 export default {
     setup() {
@@ -65,7 +67,7 @@ export default {
         },
         closeModal() {
             this.isModalVisible = false;
-            this.selectedProduct = null;
+            this.selectedProduct = null; // Reinicia el producto seleccionado
         },
         async purchaseProduct(product) {
             try {
@@ -85,6 +87,9 @@ export default {
     created() {
         this.getProducts();
     },
+    components: {
+        CustomModal
+    }
 };
 </script>
 
