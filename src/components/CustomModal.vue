@@ -56,7 +56,7 @@
         border-radius: 8px;
         text-align: center;
         width: 300px;
-        
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .modal-actions {
         margin-top: 10px;
@@ -68,5 +68,8 @@
         margin-bottom: 10px;
         padding: 8px;
         width: 70%;
+        border-radius: 10px;
+        border: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 </style>
