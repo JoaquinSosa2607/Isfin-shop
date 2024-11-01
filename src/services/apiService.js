@@ -32,7 +32,6 @@ export default {
     async deleteInventoryItem(item) {
         try {
             const itemId = item.idcod;
-            console.log(itemId);
             await apiClient.request({
                 url: '/inventario',
                 method: 'DELETE',
@@ -45,10 +44,16 @@ export default {
     async setNickname(item) {
         try {
             const updatedItem = {...item}
-            console.log(updatedItem)
             await apiClient.patch('/inventario', updatedItem);
         } catch (error) {
             console.error("Error al asignar apodo:", error);
+        }
+    },
+    async updateProduct(product) {
+        try {
+            await apiClient.patch('/productos', product.idcod)
+        } catch (error) {
+            console.error("Error aplicando descuento:", error);
         }
     }
 }

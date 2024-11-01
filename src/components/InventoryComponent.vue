@@ -17,7 +17,7 @@
                             <button @click="openNicknameModal(item)">
                                 Asignar apodo
                             </button>
-                            <button @click="discardItem(item)">
+                            <button @click="openDiscardModal(item)">
                                 Descartar
                             </button>
                         </div>
@@ -27,36 +27,44 @@
         </div>
     </div>
 
-    <div v-if="isNicknameModalVisible" class="modal">
-        <div class="modal-content">
-            <p>Ingresa el apodo:</p>
-            <input v-model="nickname" type="text" placeholder="Nuevo apodo" />
-            <button @click="assignNickname">Asignar</button>
-            <button @click="closeNicknameModal">Cancelar</button>
-        </div>
-    </div>
+    <CustomModal
+        :isVisible="isNicknameModalVisible"
+        message="Ingresa el apodo:"
+        confirmText="Asignar"
+        cancelText="Cancelar"
+        showInput
+        @confirm="assignNickname"
+        @cancel="closeNicknameModal"
+    />
+
+    <CustomModal
+        :isVisible="isDiscardModalVisible"
+        message="¿Estás seguro de descartar este objeto?"
+        confirmText="Descartar"
+        cancelText="Cancelar"
+        @confirm="discardItem"
+        @cancel="closeDiscardModal"
+    />
 </template>
 
 <script>
 import apiClient from "../services/apiService";
+import CustomModal from "./CustomModal.vue";
 
 export default {
+    components: { CustomModal },
     data() {
         return {
             items: [],
             isNicknameModalVisible: false,
+            isDiscardModalVisible: false,
             selectedItem: null,
-            nickname: "",
+            nickname: ""
         };
     },
     methods: {
         async getItems() {
             this.items = await apiClient.getAllInventoryItems();
-            console.log(this.items);
-        },
-        async discardItem(item) {
-            await apiClient.deleteInventoryItem(item);
-            await this.getItems();
         },
         openNicknameModal(item) {
             this.selectedItem = item;
@@ -68,22 +76,41 @@ export default {
             this.selectedItem = null;
             this.nickname = "";
         },
-        async assignNickname() {
-            try {
-                if (this.selectedItem && this.nickname) {
-                    this.selectedItem.param6 = this.nickname;
+        async assignNickname(nickname) {
+            if (this.selectedItem && nickname) {
+                try {
+                    this.selectedItem.param6 = nickname;
                     await apiClient.setNickname(this.selectedItem);
                     this.closeNicknameModal();
                     await this.getItems();
+                } catch (error) {
+                    console.error("Error al asignar apodo:", error);
                 }
-            } catch (error) {
-                console.error("Error al asignar apodo:", error);
             }
         },
+        openDiscardModal(item) {
+            this.selectedItem = item;
+            this.isDiscardModalVisible = true;
+        },
+        closeDiscardModal() {
+            this.isDiscardModalVisible = false;
+            this.selectedItem = null;
+        },
+        async discardItem() {
+            if (this.selectedItem) {
+                try {
+                    await apiClient.deleteInventoryItem(this.selectedItem);
+                    this.closeDiscardModal();
+                    await this.getItems();
+                } catch (error) {
+                    console.error("Error al descartar el objeto:", error);
+                }
+            }
+        }
     },
     created() {
         this.getItems();
-    },
+    }
 };
 </script>
 
