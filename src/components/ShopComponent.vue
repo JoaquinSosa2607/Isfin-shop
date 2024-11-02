@@ -1,5 +1,5 @@
 <template>
-    <div class="main-container">
+    <div class="shop-container">
         <div class="list-container">
             <div class="money-display">
                 Dinero: 1000
@@ -72,7 +72,7 @@ export default {
 
 <style scoped>
 
-.main-container {
+.shop-container {
     display: flex;
     flex-direction: column-reverse;
     justify-content: space-between;
