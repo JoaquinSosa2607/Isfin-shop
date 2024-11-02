@@ -1,9 +1,9 @@
 <template>
     <div v-if="isVisible" class="modal">
         <div class="modal-content">
-            <p> {{ message }}</p>
+            <p> {{ message }} </p>
             <div class="modal-actions">
-                <button :disabled="disableConfirm" @click="onConfirm"> {{ confirmText }}</button>
+                <button @click="onConfirm"> {{ confirmText }}</button>
                 <button @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
@@ -26,10 +26,10 @@
         emits: ["confirm", "cancel"],
         methods: {
             onConfirm() {
-                this.$emit("confirm", this.inputValue);
+                this.$emit("confirm", "purchase");
             },
             onCancel() {
-                this.$emit("cancel");
+                this.$emit("cancel", "sale");
             }
         }
         

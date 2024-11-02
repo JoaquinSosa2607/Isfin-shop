@@ -8,7 +8,7 @@
 		<div v-else class="crypto-container">
             <div class="exchange-container">
                 <ul class="crypto-list">
-                    <li  v-for="(coin, index) in exchanges" :key="index" class="crypto-item">
+                    <li  v-for="(coin, index) in exchanges" :key="index" class="crypto-item" @click="openModal(coin.name)">
                         <div class="exchange-info">
                             <p class="coin-name">{{ coin.name.toUpperCase() }}</p>
                             <p class="coin-price"> Compra: {{ coin.buy }} </p>
@@ -19,10 +19,13 @@
             </div>
 		</div>
     </div>
+
+    <CustomModal :isVisible="isModalVisible" message="Que quieres hacer?" confirmText="Comprar" cancelText="Vender" @confirm="redirectToAction('purchase', selectedCrypto)" @cancel="redirectToAction('sale', selectedCrypto)"></CustomModal>
 </template>
 
 <script>
 import cryptoClient from "../services/criptoYaService"
+import CustomModal from "./CustomModal.vue";
 import NavBarComponent from "./NavBarComponent.vue";
 export default {
     data() {
@@ -32,7 +35,9 @@ export default {
 				{ name: 'eth', buy: null, sell: null},
 				{ name: 'dai', buy: null, sell: null},
 			],
-            loading: true
+            loading: true,
+            isModalVisible: false,
+            selectedCrypto: null
 		}
     },
 	methods: {
@@ -47,13 +52,22 @@ export default {
 				}
 			}
             this.loading = false;
-		}
+		},
+        openModal(cryptoCode) {
+            this.isModalVisible = true;
+            this.selectedCrypto = cryptoCode;
+            console.log(this.selectedCrypto)
+        },
+        redirectToAction(action, cryptoCode) {
+            this.$router.push({ name: 'action', params: { action, cryptoCode } });
+        }
 	},
     created() {
 		this.getCoins();
     },
     components: {
-        NavBarComponent
+        NavBarComponent,
+        CustomModal
     }
 };
 </script>
