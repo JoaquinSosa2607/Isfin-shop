@@ -20,13 +20,15 @@
 		</div>
     </div>
 
-    <CustomModal :isVisible="isModalVisible" message="Que quieres hacer?" confirmText="Comprar" cancelText="Vender" @confirm="redirectToAction('purchase', selectedCrypto)" @cancel="redirectToAction('sale', selectedCrypto)"></CustomModal>
+    <CustomModal :isVisible="isModalVisible" message="Que quieres hacer?" confirmText="Comprar" cancelText="Vender" @confirm="redirectToAction('purchase', selectedCrypto)" @cancel="redirectToAction('sale', selectedCrypto)" @exit="closeModal" :disableButtons="modalLoading" :disableCancel="!canSell"></CustomModal>
 </template>
 
 <script>
-import cryptoClient from "../services/criptoYaService"
+import cryptoClient from "../services/criptoYaService";
+import apiClient from "../services/apiService";
 import CustomModal from "./CustomModal.vue";
 import NavBarComponent from "./NavBarComponent.vue";
+import { useUserStore } from "../stores/useUserStore";
 export default {
     data() {
 		return {
@@ -37,7 +39,9 @@ export default {
 			],
             loading: true,
             isModalVisible: false,
-            selectedCrypto: null
+            selectedCrypto: null,
+            canSell: false,
+            modalLoading: false
 		}
     },
 	methods: {
@@ -53,13 +57,43 @@ export default {
 			}
             this.loading = false;
 		},
-        openModal(cryptoCode) {
+        async openModal(cryptoCode) {
             this.isModalVisible = true;
             this.selectedCrypto = cryptoCode;
-            console.log(this.selectedCrypto)
+            this.modalLoading = true;
+            await this.checkUserTransactions(cryptoCode);
+            this.modalLoading = false;
+        },
+        closeModal(){
+            this.isModalVisible = false;
         },
         redirectToAction(action, cryptoCode) {
+            
             this.$router.push({ name: 'action', params: { action, cryptoCode } });
+        },
+        async checkUserTransactions(cryptoCode) {
+            const userStore = useUserStore();
+
+            try {
+                const transactions = await apiClient.getUserTransactions(userStore.name);
+                console.log(transactions)
+                let totalAmount = 0;
+                transactions.forEach(transaction => {
+                    if (transaction.crypto_code === cryptoCode) {
+                        const amount = parseFloat(transaction.crypto_amount);
+                        if (transaction.action === "purchase") {
+                            totalAmount += amount;
+                        } else if (transaction.action === "sale") {
+                            totalAmount -= amount;
+                        }
+                    }
+                });
+                
+                this.canSell = totalAmount > 0;
+                console.log(`Total Amount: ${totalAmount}`)
+            } catch (error) {
+                console.error(error);
+            }
         }
 	},
     created() {

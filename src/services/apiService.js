@@ -14,5 +14,13 @@ export default {
         } catch (error) {
             console.error(error);
         }
+    },
+    async getUserTransactions(user) {
+        try {
+            const response = await apiClient.get(`transactions?q={"user_id":"${user}"}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

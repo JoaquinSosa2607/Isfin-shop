@@ -1,10 +1,13 @@
 <template>
     <div v-if="isVisible" class="modal">
         <div class="modal-content">
+            <div class="exit" @click="onExit">
+                <span>X</span>
+            </div>
             <p> {{ message }} </p>
             <div class="modal-actions">
-                <button @click="onConfirm"> {{ confirmText }}</button>
-                <button @click="onCancel"> {{ cancelText }}</button>
+                <button :disabled="disableButtons" @click="onConfirm"> {{ confirmText }}</button>
+                <button :disabled="disableButtons || disableCancel" @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
     </div>
@@ -16,20 +19,20 @@
             isVisible: { type: Boolean, default: false },
             message: { type: String, required: true },
             confirmText: { type: String, default: "Confirmar" },
-            cancelText: { type: String, default: "Cancelar" }
+            cancelText: { type: String, default: "Cancelar" },
+            disableCancel: { type: Boolean, default: false },
+            disableButtons: { type: Boolean, default: false } 
         },
-        data() {
-            return {
-                inputValue: null
-            }
-        },
-        emits: ["confirm", "cancel"],
+        emits: ["confirm", "cancel", "exit"],
         methods: {
             onConfirm() {
                 this.$emit("confirm", "purchase");
             },
             onCancel() {
                 this.$emit("cancel", "sale");
+            },
+            onExit() {
+                this.$emit("exit");
             }
         }
         
@@ -55,6 +58,9 @@
         text-align: center;
         width: 300px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+
     }
     .modal-actions {
         margin-top: 10px;
@@ -69,5 +75,11 @@
         border-radius: 10px;
         border: 0;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .exit {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
     }
 </style>

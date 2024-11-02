@@ -1,7 +1,7 @@
 <template> 
     <div class="form-container">
         <div class="form-wrapper">
-            <div v-if="action === 'purchase'" class="purchase-form">
+            <div class="purchase-form">
                 <form @submit.prevent="handleSubmit">
                     <section>
                         <label for="exchange">Moneda</label>
@@ -20,15 +20,13 @@
                         <input type="number" v-model="form.money" step="0.01" required readonly>
                     </section>
                     <section class="button-group">
-                        <button type="submit">Comprar</button>
+                        <button v-if="action === 'purchase'" type="submit">Comprar</button>
+                        <button v-else-if="action === 'sale'" type="submit">Vender</button>
                         <router-link :to="{ name: 'crypto'}">
                             <button>Volver</button>
                         </router-link>
                     </section>
                 </form>
-            </div>
-            <div v-else-if="action === 'sale'">
-                <h2>Venta</h2>
             </div>
         </div>
     </div>
