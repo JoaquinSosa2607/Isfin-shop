@@ -17,17 +17,15 @@
 <script>
 import { ref } from "vue";
 import { useUserStore } from "../stores/useUserStore";
-import { useRouter } from "vue-router";
 
 export default {
     data() {
         const userStore = useUserStore();
         const userName = ref("");
-        const router = useRouter();
 
         const saveUserName = () => {
             userStore.setUser(userName.value);
-            router.push({ name: 'shop' });
+            this.$router.push('shop');
         };
 
         return { userName, saveUserName };
