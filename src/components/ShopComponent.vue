@@ -16,8 +16,13 @@
                 </ul>
             </div>
         </div>
+        <section class="crypto-hideout" @click="openCryptoModal">    
+        </section>
     </div>
 
+    <CustomModal :isVisible = "isModalVisible" message="Estás a punto de entrar en el sótano de mi tienda, estás seguro?" confirmText="Entrar" cancelText="Salir" @confirm="goToCryptoHideout" @cancel="closeCryptoModal">
+
+    </CustomModal>
 </template>
 
 <script>
@@ -27,6 +32,7 @@ export default {
     data() {
         return {
             products: [],
+            isModalVisible: false
         };
     },
     methods: {
@@ -45,6 +51,15 @@ export default {
         getIconPath(param5) {
             return new URL(`../assets/icons/${param5}.png`, import.meta.url).href;
         },
+        openCryptoModal() {
+            this.isModalVisible = true;
+        },
+        closeCryptoModal() {
+            this.isModalVisible = false;
+        },
+        goToCryptoHideout() {
+            this.$router.push('crypto')
+        }
     },
     created() {
         this.getProducts();
@@ -59,8 +74,8 @@ export default {
 
 .main-container {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: column-reverse;
+    justify-content: space-between;
     min-height: 80vh;
     margin: 0;
 }
@@ -145,5 +160,16 @@ export default {
     color: rgb(231, 175, 33);
     margin: 0;
     text-shadow: 1px 1px 2px black;
+}
+
+.crypto-hideout {
+    display: flex;
+    align-self: flex-end;
+    justify-self: start;
+    background-image: url("../assets/icons/bitcoin.png");
+    background-size: cover;
+    width: 60px;
+    height: 60px;
+    margin: 30px 30px;
 }
 </style>
