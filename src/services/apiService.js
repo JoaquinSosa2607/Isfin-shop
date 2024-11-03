@@ -7,7 +7,6 @@ const apiClient = axios.create({
 
 export default {
     async createTransaction(transaction) {
-        console.log(JSON.stringify(transaction));
         try {
             const response = await apiClient.post('transactions', transaction);
             return response.data;
