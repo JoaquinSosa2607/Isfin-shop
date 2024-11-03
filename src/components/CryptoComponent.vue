@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-        <NavBarComponent></NavBarComponent>
+        <NavBarComponent name="profile"></NavBarComponent>
         <div v-if="loading" class="loading-container">
             <div class="spinner"></div>
             <p>Cargando...</p>
