@@ -19,3 +19,15 @@ button {
 button:hover {
     background-color: #a3680f;
 }
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../assets/icons/TheCellar.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    overflow: hidden;
+}

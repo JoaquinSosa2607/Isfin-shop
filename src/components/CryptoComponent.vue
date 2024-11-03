@@ -90,7 +90,6 @@ export default {
                 });
                 
                 this.canSell = totalAmount > 0;
-                console.log(`Total Amount: ${totalAmount}`)
             } catch (error) {
                 console.error(error);
             }
@@ -108,17 +107,7 @@ export default {
 
 
 <style scoped>
-    .main-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-image: url("../assets/icons/TheCellar.webp");
-        background-size: cover;
-        background-repeat: no-repeat;
-        height: 100vh;
-        overflow: hidden;
-    }
+
 
     .crypto-container {
         display: flex;

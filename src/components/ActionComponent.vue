@@ -1,5 +1,5 @@
 <template> 
-    <div class="form-container">
+    <div class="main-container">
         <div class="form-wrapper">
             <div class="purchase-form">
                 <form @submit.prevent="handleSubmit">
@@ -115,25 +115,16 @@ export default {
 
 
 <style scoped>
-    .form-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background-image: url('../assets/icons/TheCellar.webp');
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
 
     .form-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
         background-color: rgba(255, 255, 255, 0.9);
-        padding: 40px;
+        padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        max-width: 400px;
+        max-width: 300px;
         width: 100%;
     }
 
