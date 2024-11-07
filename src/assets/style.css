@@ -17,7 +17,16 @@ button {
 }
 
 button:hover {
-    background-color: #a3680f;
+    background-color: #c77905;
+}
+
+.disableButtons{
+    padding: 10px 15px;
+    background-color: #9b7f5b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .main-container {

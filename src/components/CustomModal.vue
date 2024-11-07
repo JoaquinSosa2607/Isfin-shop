@@ -6,8 +6,8 @@
             </div>
             <p> {{ message }} </p>
             <div class="modal-actions">
-                <button :disabled="disableButtons" @click="onConfirm"> {{ confirmText }}</button>
-                <button :disabled="disableButtons || disableCancel" @click="onCancel"> {{ cancelText }}</button>
+                <button :class="{ disableButtons: disableButtons }" @click="onConfirm"> {{ confirmText }}</button>
+                <button :class="{ disableButtons: disableButtons } || disableCancel" @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
     </div>
