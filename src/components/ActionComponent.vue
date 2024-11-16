@@ -5,7 +5,7 @@
                 <form @submit.prevent="handleSubmit">
                     <section>
                         <label for="exchange">Moneda</label>
-                        <input type="text" readonly v-model="cryptoName"></input>
+                        <input type="text" readonly v-model="cryptoName">
                     </section>
                     <section>
                         <label for="cryptoAmount">Cantidad</label>
@@ -82,8 +82,8 @@ export default {
         },
         async handleSubmit() {
             try {
-                const response = await apiClient.createTransaction(this.form);
-                alert("Transacción creada con éxito!", response);
+                await apiClient.createTransaction(this.form);
+                alert(`Transacción creada con éxito!`);
                 this.form.crypto_code = "";
                 this.form.action = this.action;
                 this.form.crypto_amount = 0;
@@ -92,9 +92,6 @@ export default {
             } catch (error) {
                 console.error("Error creando transacción:", error);
             }
-        },
-        goBack() {
-            this.$router.push('crypto');
         },
     },
     async mounted() {

@@ -20,13 +20,16 @@ button:hover {
     background-color: #c77905;
 }
 
-.disableButtons{
+.restrictButtons{
     padding: 10px 15px;
     background-color: #9b7f5b;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+.restrictButtons:hover{
+    background-color: grey;
 }
 
 .main-container {
