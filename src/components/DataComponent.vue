@@ -112,7 +112,7 @@ export default {
 
 <style scoped>
 .analysis-container {
-    max-width: 600px;
+    width: 60vh;
     margin: 20px;
     padding: 20px;
     background-color: white;

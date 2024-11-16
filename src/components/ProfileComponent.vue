@@ -12,8 +12,9 @@
                 <div class="spinner"></div>
                 <p style="color: black;">Buscando transacciones...</p>
             </div>
-            <table v-else class="transactions-table">
-                <thead>
+            <div v-else class="data-container">
+                <table class="transactions-table">
+                    <thead>
                     <tr>
                         <th>Moneda</th>
                         <th>Cantidad</th>
@@ -22,8 +23,8 @@
                         <th>Fecha</th>
                         <th>Opciones</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr v-for="(transaction, index) in transactions" :key="index">
                         <td>{{ transaction.crypto_code.toUpperCase() }}</td>
                         <td>{{ transaction.crypto_amount }}</td>
@@ -34,8 +35,10 @@
                             <button @click="openTransactionModal(transaction._id)">✔</button>
                         </td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
         <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
@@ -155,6 +158,13 @@ export default {
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         flex-grow: 1;
+
+    }
+
+    .data-container {
+        width: 100%;
+        max-width: 800px;
+        max-height: 70vh;
         overflow: auto;
     }
 
