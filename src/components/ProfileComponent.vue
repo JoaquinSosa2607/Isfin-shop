@@ -2,7 +2,12 @@
     <div class="main-container">
         <NavBarComponent name="crypto"></NavBarComponent>
         <div class="transactions-container">
-            <h3>Historial de movimientos de {{ username }}</h3>
+            <div class="options">
+                <h3>Historial de movimientos de {{ username }}</h3>
+                <router-link :to="{ name: 'data'}">
+                    <button>Análisis</button>
+                </router-link>
+            </div>
             <div v-if="loading" class="loading-container">
                 <div class="spinner"></div>
                 <p style="color: black;">Buscando transacciones...</p>
@@ -183,6 +188,13 @@ export default {
 
     .transactions-table td {
         color: #555;
+    }
+
+    .options {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        align-items: center;
     }
 
     .modal-overlay {

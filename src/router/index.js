@@ -4,6 +4,7 @@ import HomeView from "../views/HomeView.vue";
 import CryptoView from "../views/CryptoView.vue";
 import ActionView from "../views/ActionView.vue";
 import ProfileView from "../views/ProfileView.vue";
+import DataView from "../views/DataView.vue";
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: ProfileView
+    },
+    {
+        path: '/data',
+        name: 'data',
+        component: DataView
     },
 ]
 

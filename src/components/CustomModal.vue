@@ -6,8 +6,8 @@
             </div>
             <p> {{ message }} </p>
             <div class="modal-actions">
-                <button :class="{ disableButtons: disableButtons }" @click="onConfirm"> {{ confirmText }}</button>
-                <button :class="{ disableButtons: disableButtons } || disableCancel" @click="onCancel"> {{ cancelText }}</button>
+                <button :class="{ restrictButtons: disableButtons }" @click="onConfirm"> {{ confirmText }}</button>
+                <button :class="{ restrictButtons: disableButtons } || disableCancel" @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
     </div>
@@ -81,5 +81,9 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+    }
+
+    .exit:hover {
+        cursor: pointer;
     }
 </style>
