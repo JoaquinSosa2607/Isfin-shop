@@ -12,6 +12,7 @@
                     </router-link>
                 </div>
                 <canvas id="cryptoChart"></canvas>
+                <h2>Total de criptomonedas: {{ cryptoTotals.btc + cryptoTotals.eth + cryptoTotals.dai }}</h2>
             </div>
       </div>
 </template>
