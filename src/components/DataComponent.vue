@@ -1,25 +1,53 @@
 <template>
-      <div class="main-container">
-            <div class="analysis-container">
+    <div class="main-container">
+        <router-link :to="{ name: 'profile'}">
+            <button>Volver</button>
+        </router-link>
+        <div class="analysis-container">
+            <div class="status-container">
                 <div v-if="isLoading" class="loading-container">
                     <div class="spinner"></div>
                     <p style="color: black">Cargando tus datos...</p>
                 </div>
                 <div v-else class="options">
                     <h2>Estado actual de tus inversiones</h2>
-                    <router-link :to="{ name: 'profile'}">
-                        <button>Volver</button>
-                    </router-link>
+
                 </div>
-                <canvas id="cryptoChart"></canvas>
                 <h2>Total de criptomonedas: {{ cryptoTotals.btc + cryptoTotals.eth + cryptoTotals.dai }}</h2>
+                <canvas id="cryptoChart"></canvas>
             </div>
-      </div>
+            <div class="investment-container">
+                <h3>Resultado de tus inversiones</h3>
+                <div v-if="isLoading" class="loading-container">
+                    <div class="spinner"></div>
+                    <p style="color: black">Cargando tus inversiones...</p>
+                </div>
+                <table v-else class="results-table">
+                    <thead>
+                    <tr>
+                        <th>Criptomoneda</th>
+                        <th>Resultado (ARS)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(result, crypto) in results" :key="crypto">
+                        <td>{{ crypto.toUpperCase() }}</td>
+                        <td :class="{ profit: result >= 0, loss: result < 0 }">
+                            {{ result.toFixed(2) }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 <script>
-import { Chart, PieController, ArcElement, Tooltip, Legend, Title } from "chart.js";
-import apiClient from "../services/apiService.js"
+import {Chart, PieController, ArcElement, Tooltip, Legend, Title} from "chart.js";
+import apiClient from "../services/apiService.js";
+import cryptoClient from "../services/criptoYaService.js";
 
 Chart.register(PieController, ArcElement, Tooltip, Legend, Title);
 
@@ -34,6 +62,8 @@ export default {
             },
             chart: null,
             isLoading: true,
+            results: {},
+            cryptoPrices: {}
         }
     },
     methods: {
@@ -45,6 +75,8 @@ export default {
 
                 }
                 this.transactions = await apiClient.getUserTransactions(username);
+                await this.getCryptoPrices();
+                this.calculateResults();
                 this.calculateTotals();
                 this.renderChart();
             } catch (error) {
@@ -53,11 +85,46 @@ export default {
                 this.isLoading = false;
             }
         },
+        async getCryptoPrices() {
+            try {
+                const responseBTC = await cryptoClient.getCryptoInfo("btc");
+                const responseETH = await cryptoClient.getCryptoInfo("eth");
+                const responseDAI = await cryptoClient.getCryptoInfo("dai");
+                this.cryptoPrices["bitcoin"] = responseBTC.bid;
+                this.cryptoPrices["ethereum"] = responseETH.bid;
+                this.cryptoPrices["dai"] = responseDAI.bid;
+            } catch (error) {
+                console.error("Error al obtener los precios de las criptomonedas", error);
+            }
+        },
+        calculateResults() {
+            const investmentData = {};
+
+            this.transactions.forEach(({crypto_code, action, money}) => {
+                if (!investmentData[crypto_code]) {
+                    investmentData[crypto_code] = {spent: 0, earned: 0};
+                }
+                if (action === "purchase") {
+                    investmentData[crypto_code].spent += parseFloat(money);
+                } else if (action === "sale") {
+                    investmentData[crypto_code].earned += parseFloat(money);
+                }
+            });
+
+            Object.entries(investmentData).forEach(([crypto, {spent, earned}]) => {
+                if (crypto === "bitcoin" || crypto === "ethereum" || crypto === "dai") {
+                    const currentPrice = this.cryptoPrices[crypto] * this.cryptoTotals[crypto];
+                    this.results[crypto] = currentPrice - spent;
+                } else {
+                    this.results[crypto] = earned - spent;
+                }
+            });
+        },
         calculateTotals() {
-            this.cryptoTotals = { btc: 0, eth: 0, dai: 0 };
+            this.cryptoTotals = {btc: 0, eth: 0, dai: 0};
             this.transactions.forEach(transaction => {
-                const { action, crypto_code, crypto_amount } = transaction;
-                if(action === "purchase") {
+                const {action, crypto_code, crypto_amount} = transaction;
+                if (action === "purchase") {
                     this.cryptoTotals[crypto_code] += crypto_amount;
                 } else if (action === "sale") {
                     this.cryptoTotals[crypto_code] -= crypto_amount;
@@ -65,7 +132,7 @@ export default {
             })
         },
         renderChart() {
-            if(this.chart) {
+            if (this.chart) {
                 this.chart.destroy();
             }
 
@@ -112,7 +179,14 @@ export default {
 </script>
 
 <style scoped>
+
 .analysis-container {
+    display: flex;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+}
+.status-container {
     width: 60vh;
     margin: 20px;
     padding: 20px;
@@ -120,7 +194,24 @@ export default {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+
 }
+
+.investment-container {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-content: center;
+    width: 60vh;
+    height: 30vh;
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
 canvas {
     max-width: 100%;
     height: auto;
@@ -128,9 +219,36 @@ canvas {
 
 .options {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 10px;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+}
+
+.results-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.results-table th {
+    background-color: #dd8715;
+    font-weight: bold;
+    color: white;
+}
+
+.results-table td.profit {
+    color: green;
+}
+
+.results-table td.loss {
+    color: red;
 }
 </style>
