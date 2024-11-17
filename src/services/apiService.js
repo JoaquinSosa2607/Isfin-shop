@@ -1,59 +1,49 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-    baseURL: 'https://api.yumserver.com/16464/generic'
+    baseURL: 'https://labor3-d60e.restdb.io/rest/',
+    headers: { 'x-apikey': '64a2e9bc86d8c525a3ed8f63' }
 });
 
 export default {
-
-    async getAllProducts() {
+    async createTransaction(transaction) {
         try {
-            const response = await apiClient.get('/productos');
+            const response = await apiClient.post('transactions', transaction);
             return response.data;
         } catch (error) {
             console.error(error);
         }
     },
-    async purchaseProduct(product) {
+    async getUserTransactions(user) {
         try {
-            await apiClient.post(`/inventario`, product);
-        } catch (error) {
-            console.error(error);
-        }
-    },
-    async getAllInventoryItems() {
-        try {
-            const response = await apiClient.get('/inventario');
+            const response = await apiClient.get(`transactions?q={"user_id":"${user}"}`);
             return response.data;
         } catch (error) {
             console.error(error);
         }
     },
-    async deleteInventoryItem(item) {
+    async getTransactionById(id) {
         try {
-            const itemId = item.idcod;
-            await apiClient.request({
-                url: '/inventario',
-                method: 'DELETE',
-                data: { idcod: itemId }
-            });
+            const response = await apiClient.get(`transactions/${id}`);
+            return response.data;
         } catch (error) {
             console.error(error);
         }
     },
-    async setNickname(item) {
+    async deleteTransaction(id) {
         try {
-            const updatedItem = {...item}
-            await apiClient.patch('/inventario', updatedItem);
+            await apiClient.delete(`transactions/${id}`);
+            return "Transacción eliminada con éxito."
         } catch (error) {
-            console.error("Error al asignar apodo:", error);
+            console.error(error);
         }
     },
-    async updateProduct(product) {
+    async editTransaction(id, body) {
         try {
-            await apiClient.patch('/productos', product.idcod)
+            await apiClient.patch(`transactions/${id}`, body);
+            return "Transacción editada con éxito."
         } catch (error) {
-            console.error("Error aplicando descuento:", error);
+            console.error(error);
         }
     }
 }

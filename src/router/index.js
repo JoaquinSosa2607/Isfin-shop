@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ShopView from "../views/ShopView.vue";
 import HomeView from "../views/HomeView.vue";
-import InventoryView from "../views/InventoryView.vue";
+import CryptoView from "../views/CryptoView.vue";
+import ActionView from "../views/ActionView.vue";
+import ProfileView from "../views/ProfileView.vue";
+import DataView from "../views/DataView.vue";
 
 const routes = [
     {
@@ -15,14 +18,29 @@ const routes = [
         component: ShopView
     },
     {
-        path: '/inventory',
-        name: 'inventory',
-        component: InventoryView
-    }
+        path: '/crypto',
+        name: 'crypto',
+        component: CryptoView
+    },
+    {
+        path: '/:action/:cryptoCode',
+        name: 'action',
+        component: ActionView
+    },
+    {
+        path: '/profile',
+        name: 'profile',
+        component: ProfileView
+    },
+    {
+        path: '/data',
+        name: 'data',
+        component: DataView
+    },
 ]
 
 const router = createRouter({
-    history: createWebHistory('/Isfin-shop/'),
+    history: createWebHistory(),
     routes
 })
 

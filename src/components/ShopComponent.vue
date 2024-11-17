@@ -1,151 +1,68 @@
 <template>
-    <nav class="shop-nav">
-        <router-link :to="{ name:'inventory'}"><button>Inventario</button></router-link>
-    </nav>
-    <div class="main-container">
+    <div class="shop-container">
         <div class="list-container">
             <div class="money-display">
-                Dinero: {{ userStore.money }}
+                Dinero: 1000
             </div>
             <div class="product-container">
                 <ul class="product-list">
-                    <li v-for="product in products" :key="product.id" class="product-item" @click="showModal(product)">
-                        <img class="product-img" :src="getIconPath(product.param5)" :alt="product.param1"/>
+                    <li v-for="product in products" :key="product.id" class="product-item">
+                        <img class="product-img" :src="getIconPath(product.type)" :alt="product.name"/>
                         <div class="product-info">
-                            <p class="product-name">{{ product.param1 }}</p>
-                            <p class="product-price">{{ product.param2 }} gold</p>
+                            <p class="product-name">{{ product.name }}</p>
+                            <p class="product-price">{{ product.price }} gold</p>
                         </div>
                     </li>
                 </ul>
-                <img class="discount-attempt" src="../assets/icons/d20.png" alt="D20" @click="showDiscountModal">
             </div>
         </div>
+        <section class="crypto-hideout" @click="openCryptoModal">    
+        </section>
     </div>
 
-    <CustomModal
-        :isVisible="isDiscountModalVisible"
-        message="¿Quieres intentar obtener un descuento? Tendrás que superar:"
-        :value="difficulty"
-        :result="diceRoll"
-        :disableConfirm = "hasAttemptedDiscount"
-        confirmText="Persuadir"
-        cancelText="Cancelar"
-        @confirm="discountAttempt"
-        @cancel="closeModal"
-    />
+    <CustomModal :isVisible = "isModalVisible" message="Estás a punto de entrar en el sótano de mi tienda, estás seguro?" confirmText="Entrar" cancelText="Salir" @confirm="goToCryptoHideout" @cancel="closeCryptoModal">
 
-    <CustomModal
-        :isVisible="isModalVisible"
-        message="¿Comprar este objeto?"
-        confirmText="Comprar"
-        cancelText="Cancelar"
-        @confirm="purchaseProduct(selectedProduct)"
-        @cancel="closeModal"
-    />
+    </CustomModal>
 </template>
 
 <script>
-import apiClient from "../services/apiService";
-import { useUserStore } from "../stores/useUserStore";
 import CustomModal from "./CustomModal.vue";
 
 export default {
-    setup() {
-        const userStore = useUserStore();
-
-        return { userStore };
-    },
     data() {
         return {
             products: [],
-            isModalVisible: false,
-            isDiscountModalVisible: false,
-            selectedProduct: null,
-            difficulty: null,
-            diceRoll: null,
-            hasAttemptedDiscount: false
+            isModalVisible: false
         };
     },
     methods: {
-        async getProducts() {
-            this.products = await apiClient.getAllProducts();
+        getProducts() {
+            this.products = [ 
+                {name: "Gran Hacha", price: "30", type: "axe"}, 
+                {name: "Espadón", price: "50", type: "sword"},
+                {name: "Arco Largo", price: "50", type: "bow"},
+                {name: "Ballesta", price: "75", type: "crossbow"},
+                {name: "Varita de Fuego", price: "150", type: "wand"},
+                {name: "Anillo de Trueno", price: "300", type: "ring"},
+                {name: "Capa de Lobo", price: "50", type: "cloak"},
+                {name: "Casco de Plata", price: "500", type: "helmet"},
+            ]
         },
         getIconPath(param5) {
             return new URL(`../assets/icons/${param5}.png`, import.meta.url).href;
         },
-        showModal(product) {
-            this.selectedProduct = product;
+        openCryptoModal() {
             this.isModalVisible = true;
         },
-        showDiscountModal() {
-            this.isDiscountModalVisible = true;
-        },
-        closeModal() {
+        closeCryptoModal() {
             this.isModalVisible = false;
-            this.isDiscountModalVisible = false;
-            this.selectedProduct = null;
         },
-        async purchaseProduct(product) {
-            try {
-                if(this.userStore.money > 0) {
-                    await apiClient.purchaseProduct(product);
-                    await this.setDifficulty();
-                    this.closeModal();
-                    this.userStore.purchaseItem(product.param2)
-                } else {
-                    alert("No tiene el suficiente dinero")
-                }
-                
-            } catch (error) {
-                console.error("Error al comprar el producto:", error);
-            }
-        },
-        async setDifficulty() {
-            const items = await apiClient.getAllInventoryItems();
-            if(items.length == 0) {
-                this.difficulty = "15"
-            } else if(items.length > 0 && items.length <= 5) {
-                this.difficulty = "12"
-            } else {
-                this.difficulty = "10"
-            }
-        },
-        async discountAttempt() {
-            this.diceRoll = Math.floor(Math.random() * 20) + 1;
-            
-            if (this.diceRoll >= this.difficulty) {
-                try {
-
-                    const updatedProducts = this.products.map(product => ({
-                        ...product,
-                        param2: product.param2 - 20
-                    }));
-
-                    const patchPromises = updatedProducts.map(async updatedProduct => {
-                        return await apiClient.updateProduct(updatedProduct);
-                    });
-
-                    await Promise.all(patchPromises);
-
-                    this.products = updatedProducts;
-                    alert("¡Descuento aplicado con éxito!");
-                    this.diceRoll = null;
-                    this.hasAttemptedDiscount = true
-
-                } catch (error) {
-                    console.error("Error al aplicar el descuento:", error);
-                }
-            } else {
-                alert(`Fallaste la tirada (Resultado: ${this.diceRoll}). No puedes volver a intentarlo.`);
-                this.diceRoll = null;
-                this.hasAttemptedDiscount = true;
-            }
-            this.closeModal();
-        },
+        goToCryptoHideout() {
+            this.$router.push('crypto')
+        }
     },
     created() {
         this.getProducts();
-        this.setDifficulty();
     },
     components: {
         CustomModal
@@ -155,17 +72,10 @@ export default {
 
 <style scoped>
 
-.shop-nav {
+.shop-container {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.main-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: column-reverse;
+    justify-content: space-between;
     min-height: 80vh;
     margin: 0;
 }
@@ -205,6 +115,7 @@ export default {
 
 .product-container {
     display: flex;
+    width: 530px;
 }
 
 .product-item {
@@ -251,10 +162,14 @@ export default {
     text-shadow: 1px 1px 2px black;
 }
 
-.discount-attempt{
-    width: 75px;
+.crypto-hideout {
     display: flex;
-    align-self: center;
-    justify-self: center;
+    align-self: flex-end;
+    justify-self: start;
+    background-image: url("../assets/icons/bitcoin.png");
+    background-size: cover;
+    width: 60px;
+    height: 60px;
+    margin: 30px 30px;
 }
 </style>

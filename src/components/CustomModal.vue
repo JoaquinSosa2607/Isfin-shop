@@ -1,12 +1,13 @@
 <template>
     <div v-if="isVisible" class="modal">
         <div class="modal-content">
-            <p> {{ message }} {{ value }}</p>
-            <p v-if="result">Resultado de la tirada: {{ result }}</p>
-            <input v-if="showInput" v-model="inputValue" type="text" placeholder="Ingrese el texto..."/>
+            <div class="exit" @click="onExit">
+                <span>X</span>
+            </div>
+            <p> {{ message }} </p>
             <div class="modal-actions">
-                <button :disabled="disableConfirm" @click="onConfirm"> {{ confirmText }}</button>
-                <button @click="onCancel"> {{ cancelText }}</button>
+                <button :class="{ restrictButtons: disableButtons }" @click="onConfirm"> {{ confirmText }}</button>
+                <button :class="{ restrictButtons: disableButtons } || disableCancel" @click="onCancel"> {{ cancelText }}</button>
             </div>
         </div>
     </div>
@@ -17,25 +18,21 @@
         props: {
             isVisible: { type: Boolean, default: false },
             message: { type: String, required: true },
-            value: { type: String },
             confirmText: { type: String, default: "Confirmar" },
             cancelText: { type: String, default: "Cancelar" },
-            showInput: { type: Boolean, default: false },
-            result: { type: Number, default: null },
-            disableConfirm: { type: Boolean, default: false }
+            disableCancel: { type: Boolean, default: false },
+            disableButtons: { type: Boolean, default: false } 
         },
-        data() {
-            return {
-                inputValue: null
-            }
-        },
-        emits: ["confirm", "cancel"],
+        emits: ["confirm", "cancel", "exit"],
         methods: {
             onConfirm() {
-                this.$emit("confirm", this.inputValue);
+                this.$emit("confirm", "purchase");
             },
             onCancel() {
-                this.$emit("cancel");
+                this.$emit("cancel", "sale");
+            },
+            onExit() {
+                this.$emit("exit");
             }
         }
         
@@ -61,6 +58,9 @@
         text-align: center;
         width: 300px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+
     }
     .modal-actions {
         margin-top: 10px;
@@ -75,5 +75,15 @@
         border-radius: 10px;
         border: 0;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .exit {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .exit:hover {
+        cursor: pointer;
     }
 </style>
