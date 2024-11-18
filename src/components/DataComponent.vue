@@ -20,7 +20,7 @@
                 <h3>Resultado de tus inversiones</h3>
                 <div v-if="isLoading" class="loading-container">
                     <div class="spinner"></div>
-                    <p style="color: black">Cargando tus inversiones...</p>
+                    <p style="color: black">Calculando tus inversiones...</p>
                 </div>
                 <table v-else class="results-table">
                     <thead>
@@ -100,26 +100,39 @@ export default {
         calculateResults() {
             const investmentData = {};
 
-            this.transactions.forEach(({crypto_code, action, money}) => {
+            this.transactions.forEach(({ crypto_code, action, money, crypto_amount }) => {
                 if (!investmentData[crypto_code]) {
-                    investmentData[crypto_code] = {spent: 0, earned: 0};
+                    investmentData[crypto_code] = {
+                        totalSpent: 0,
+                        totalEarned: 0,
+                        totalCrypto: 0
+                    };
                 }
+
                 if (action === "purchase") {
-                    investmentData[crypto_code].spent += parseFloat(money);
+                    investmentData[crypto_code].totalSpent += parseFloat(money);
+                    investmentData[crypto_code].totalCrypto += parseFloat(crypto_amount);
                 } else if (action === "sale") {
-                    investmentData[crypto_code].earned += parseFloat(money);
+                    investmentData[crypto_code].totalEarned += parseFloat(money);
+                    investmentData[crypto_code].totalCrypto -= parseFloat(crypto_amount);
                 }
             });
 
-            Object.entries(investmentData).forEach(([crypto, {spent, earned}]) => {
-                if (crypto === "bitcoin" || crypto === "ethereum" || crypto === "dai") {
-                    const currentPrice = this.cryptoPrices[crypto] * this.cryptoTotals[crypto];
-                    this.results[crypto] = currentPrice - spent;
+            Object.entries(investmentData).forEach(([crypto, data]) => {
+                const { totalSpent, totalEarned, totalCrypto } = data;
+                const currentPrice = this.cryptoPrices[crypto] || 0;
+
+                if (totalEarned > totalSpent) {
+                    this.results[crypto] = totalEarned - totalSpent;
+                } else if (totalCrypto > 0) {
+                    const currentMarketValue = totalCrypto * currentPrice;
+                    this.results[crypto] = currentMarketValue - totalSpent;
                 } else {
-                    this.results[crypto] = earned - spent;
+                    this.results[crypto] = totalEarned - totalSpent;
                 }
             });
-        },
+        }
+        ,
         calculateTotals() {
             this.cryptoTotals = {btc: 0, eth: 0, dai: 0};
             this.transactions.forEach(transaction => {
